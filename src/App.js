@@ -13,6 +13,8 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import './App.css';
 
+import UploadImage from './components/UploadImage';
+
 Amplify.configure(awsExports);
 
 const history = createHistory();
@@ -28,12 +30,16 @@ function App() {
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
               <Nav.Link href="/">Home</Nav.Link>
+              <Nav.Link href="/uploadImage">Upload Image</Nav.Link>
+
             </Nav>
           </Navbar.Collapse>
           <AmplifySignOut />
         </Navbar>
         
        <Route path="/" exact component={HomePage} />
+       <Route path="/uploadImage" exact component={UploadImage} />
+
       </Router>
     </div>
     </AmplifyAuthenticator>
