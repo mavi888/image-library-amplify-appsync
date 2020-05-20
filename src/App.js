@@ -5,6 +5,8 @@ import './App.css';
 
 import Amplify from "aws-amplify";
 import { AmplifyAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
+import { AmazonAIPredictionsProvider } from '@aws-amplify/predictions';
+
 import awsExports from "./aws-exports";
 
 import HomePage from './components/HomePage';
@@ -16,6 +18,7 @@ import './App.css';
 import UploadImage from './components/UploadImage';
 
 Amplify.configure(awsExports);
+Amplify.addPluggable(new AmazonAIPredictionsProvider());
 
 const history = createHistory();
 
