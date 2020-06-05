@@ -33,7 +33,12 @@ class ImageGallery extends Component {
               </button>
 
               <img src={image.src} alt="Smiley face" width="300" />
-              <div>{image.labels.join(", ")}</div>
+
+              <div className="img-label-container">
+                {image.labels.map((label) => (
+                  <div className="img-label">{label}</div>
+                ))}
+              </div>
             </div>
           ))}
         </div>
