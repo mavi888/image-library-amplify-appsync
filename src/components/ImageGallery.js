@@ -5,11 +5,16 @@ class ImageGallery extends Component {
     super(props);
     this.state = {
       imageId: null,
+      tagInputValue: "",
     };
   }
 
-  handleChange = (e) => {
-    console.log(e.target);
+  handleTagInputChange = (e) => {
+    this.setState({ tagInputValue: e.target.value });
+  };
+
+  onAddTagClick = (imageId) => {
+    this.setState({ imageId: imageId });
   };
 
   render() {
@@ -38,6 +43,41 @@ class ImageGallery extends Component {
                 {image.labels.map((label) => (
                   <div className="img-label">{label}</div>
                 ))}
+              </div>
+
+              <div className="add-tag-container">
+                {this.state.imageId !== image.id && (
+                  <button
+                    type="button"
+                    className="add-tag-btn"
+                    onClick={() => this.onAddTagClick(image.id)}
+                  >
+                    Add tag &#43;
+                  </button>
+                )}
+                {this.state.imageId === image.id && (
+                  <React.Fragment>
+                    <input
+                      type="text"
+                      placeholder="Tag name"
+                      className="add-tag-input"
+                      onChange={this.handleTagInputChange}
+                    />
+                    <button
+                      type="button"
+                      className="add-tag-confirm"
+                      disabled={this.state.tagInputValue.length === 0}
+                      onClick={(event) => {
+                        this.props.addTagImage(
+                          image.id,
+                          this.state.tagInputValue
+                        );
+                      }}
+                    >
+                      Add
+                    </button>
+                  </React.Fragment>
+                )}
               </div>
             </div>
           ))}

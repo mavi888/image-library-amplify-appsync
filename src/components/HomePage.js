@@ -5,7 +5,7 @@ import ImageGallery from "./ImageGallery";
 
 import { Storage, API, graphqlOperation } from "aws-amplify";
 import { listPictures } from "../graphql/queries";
-import { deletePicture } from "../graphql/mutations";
+import { updatePicture, deletePicture } from "../graphql/mutations";
 
 class HomePage extends React.Component {
   constructor(props) {
@@ -55,6 +55,31 @@ class HomePage extends React.Component {
     });
   };
 
+  addTagImage = async (imageId, tagValue) => {
+    console.log("home page");
+    console.log(imageId);
+    console.log(tagValue);
+
+    // First i need all the tags for that image
+    const image = this.state.images.filter((value, index, arr) => {
+      return value.id === imageId;
+    });
+
+    let labels = image[0].labels;
+    labels.push(tagValue);
+
+    const input = {
+      id: imageId,
+      labels: labels,
+    };
+    await API.graphql(graphqlOperation(updatePicture, { input: input }));
+
+    //Then I need to refresh the state with the new tag
+    const result = await API.graphql(graphqlOperation(listPictures));
+    let imageArray = await this.buildImageArray(result.data.listPictures.items);
+    this.setState({ images: imageArray });
+  };
+
   render() {
     return (
       <div className="HomePage">
@@ -62,6 +87,7 @@ class HomePage extends React.Component {
         <ImageGallery
           images={this.state.images}
           deleteImage={this.deleteImage}
+          addTagImage={this.addTagImage}
         />
       </div>
     );
