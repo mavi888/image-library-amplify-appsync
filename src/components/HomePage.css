@@ -1,7 +1,94 @@
 .figure {
-    margin: 5px !important;
-  }
-  .HomePage {
-    text-align: center;
-    padding-top: 20px;
-  }
+  margin: 5px !important;
+}
+.HomePage {
+  text-align: center;
+  padding-top: 20px;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.container > .img-container {
+  flex-basis: 33.33333%;
+}
+
+.img-container {
+  position: relative;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+  background-color: dodgerblue;
+  color: white;
+  font-weight: bold;
+  border-bottom-left-radius: 2px;
+  padding: 2px 8px;
+  font-size: 16px;
+}
+
+.img-label-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 4px 2px;
+  justify-content: flex-start;
+}
+
+.img-label {
+  font-size: 10px;
+  color: white;
+  background-color: rebeccapurple;
+  margin-top: 2px;
+  margin-right: 4px;
+  margin-bottom: 2px;
+  padding: 6px;
+  border-radius: 3px;
+}
+
+.add-tag-container {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+}
+
+.add-tag-btn {
+  font-size: 12px;
+  font-weight: bold;
+  background-color: seagreen;
+  color: white;
+  padding: 4px 8px;
+  border: 2px darkgreen solid;
+  border-radius: 4px;
+}
+
+.add-tag-input {
+  font-size: 13px;
+  padding: 4px;
+  margin-right: 4px;
+  border: 1px slategray solid;
+  border-radius: 4px;
+  width: 140px;
+}
+
+.add-tag-confirm {
+  font-size: 12px;
+  font-weight: bold;
+  background-color: seagreen;
+  color: white;
+  padding: 4px 8px;
+  border: 1px darkgreen solid;
+  border-radius: 4px;
+}
+
+.add-tag-confirm:disabled {
+  opacity: 0.6;
+}
