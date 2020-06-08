@@ -2,9 +2,10 @@ import React from "react";
 import "./HomePage.css";
 
 import ImageGallery from "./ImageGallery";
+import SearchImage from "./SearchImage";
 
 import { Storage, API, graphqlOperation } from "aws-amplify";
-import { listPictures } from "../graphql/queries";
+import { listPictures, searchPictures } from "../graphql/queries";
 import { updatePicture, deletePicture } from "../graphql/mutations";
 
 class HomePage extends React.Component {
@@ -16,10 +17,14 @@ class HomePage extends React.Component {
     };
   }
 
-  async componentDidMount() {
+  getAllImagesToState = async () => {
     const result = await API.graphql(graphqlOperation(listPictures));
     let imageArray = await this.buildImageArray(result.data.listPictures.items);
     this.setState({ images: imageArray });
+  };
+
+  async componentDidMount() {
+    await this.getAllImagesToState();
   }
 
   async buildImageArray(listPictures) {
@@ -75,15 +80,49 @@ class HomePage extends React.Component {
     await API.graphql(graphqlOperation(updatePicture, { input: input }));
 
     //Then I need to refresh the state with the new tag
-    const result = await API.graphql(graphqlOperation(listPictures));
-    let imageArray = await this.buildImageArray(result.data.listPictures.items);
-    this.setState({ images: imageArray });
+    await this.getAllImagesToState();
+  };
+
+  searchImage = async (searchLabel) => {
+    var result;
+
+    // when no search filter is passed, revert back to full list
+    if (searchLabel.label == "") {
+      await this.getAllImagesToState();
+    } else {
+      // search
+      const filter = {
+        labels: {
+          match: {
+            labels: searchLabel,
+          },
+        },
+      };
+
+      result = await API.graphql(
+        graphqlOperation(searchPictures, { filter: filter })
+      );
+
+      if (result.data.searchPictures.items.length > 0) {
+        let imageArray = await this.buildImageArray(
+          result.data.searchPictures.items
+        );
+        this.setState({ images: imageArray });
+      } else {
+        this.setState({
+          images: [],
+        });
+      }
+    }
   };
 
   render() {
     return (
       <div className="HomePage">
-        <div>Image Gallery</div>
+        <div>
+          <h1> Image Gallery</h1>
+        </div>
+        <SearchImage searchImage={this.searchImage} />
         <ImageGallery
           images={this.state.images}
           deleteImage={this.deleteImage}

@@ -38,3 +38,32 @@ export const listPictures = /* GraphQL */ `
     }
   }
 `;
+export const searchPictures = /* GraphQL */ `
+  query SearchPictures(
+    $filter: SearchablePictureFilterInput
+    $sort: SearchablePictureSortInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    searchPictures(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        name
+        owner
+        labels
+        file {
+          bucket
+          region
+          key
+        }
+      }
+      nextToken
+      total
+    }
+  }
+`;
