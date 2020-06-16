@@ -51,13 +51,18 @@ class HomePage extends React.Component {
     const id = {
       id: imageId,
     };
-    await API.graphql(graphqlOperation(deletePicture, { input: id }));
-    console.log(this.state.images);
-    this.setState({
-      images: this.state.images.filter((value, index, arr) => {
-        return value.id !== imageId;
-      }),
-    });
+    try {
+      await API.graphql(graphqlOperation(deletePicture, { input: id }));
+      console.log(this.state.images);
+      this.setState({
+        images: this.state.images.filter((value, index, arr) => {
+          return value.id !== imageId;
+        }),
+      });
+    } catch (error) {
+      console.log(error);
+      alert("Cannot delete: User doesn't own this image");
+    }
   };
 
   addTagImage = async (imageId, tagValue) => {
@@ -77,10 +82,16 @@ class HomePage extends React.Component {
       id: imageId,
       labels: labels,
     };
-    await API.graphql(graphqlOperation(updatePicture, { input: input }));
 
-    //Then I need to refresh the state with the new tag
-    await this.getAllImagesToState();
+    try {
+      await API.graphql(graphqlOperation(updatePicture, { input: input }));
+
+      //Then I need to refresh the state with the new tag
+      await this.getAllImagesToState();
+    } catch (error) {
+      console.log(error);
+      alert("Cannot edit: User doesn't own this image");
+    }
   };
 
   searchImage = async (searchLabel) => {
