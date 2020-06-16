@@ -7,7 +7,11 @@ import SearchImage from "./SearchImage";
 import { Storage, API, graphqlOperation } from "aws-amplify";
 import { listPictures, searchPictures } from "../graphql/queries";
 import { updatePicture, deletePicture } from "../graphql/mutations";
-import { newOnCreatePicture } from "../graphql/subscriptions";
+import {
+  newOnCreatePicture,
+  newOnUpdatePicture,
+  newOnDeletePicture,
+} from "../graphql/subscriptions";
 
 function HomePage(props) {
   const [images, setImages] = useState([]);
@@ -24,10 +28,28 @@ function HomePage(props) {
   }, [picture]);
 
   let subscriptionOnCreate;
+  let subscriptionOnDelete;
+  let subscriptionOnUpdate;
 
   function setupSubscriptions() {
     subscriptionOnCreate = API.graphql(
       graphqlOperation(newOnCreatePicture)
+    ).subscribe({
+      next: (picturesData) => {
+        setPicture(picturesData);
+      },
+    });
+
+    subscriptionOnDelete = API.graphql(
+      graphqlOperation(newOnDeletePicture)
+    ).subscribe({
+      next: (picturesData) => {
+        setPicture(picturesData);
+      },
+    });
+
+    subscriptionOnUpdate = API.graphql(
+      graphqlOperation(newOnUpdatePicture)
     ).subscribe({
       next: (picturesData) => {
         setPicture(picturesData);
@@ -40,6 +62,8 @@ function HomePage(props) {
 
     return () => {
       subscriptionOnCreate.unsubscribe();
+      subscriptionOnDelete.unsubscribe();
+      subscriptionOnUpdate.unsubscribe();
     };
   }, []);
 

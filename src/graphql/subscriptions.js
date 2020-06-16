@@ -16,6 +16,36 @@ export const newOnCreatePicture = /* GraphQL */ `
     }
   }
 `;
+export const newOnUpdatePicture = /* GraphQL */ `
+  subscription NewOnUpdatePicture {
+    newOnUpdatePicture {
+      id
+      name
+      owner
+      labels
+      file {
+        bucket
+        region
+        key
+      }
+    }
+  }
+`;
+export const newOnDeletePicture = /* GraphQL */ `
+  subscription NewOnDeletePicture {
+    newOnDeletePicture {
+      id
+      name
+      owner
+      labels
+      file {
+        bucket
+        region
+        key
+      }
+    }
+  }
+`;
 export const onCreatePicture = /* GraphQL */ `
   subscription OnCreatePicture($owner: String!) {
     onCreatePicture(owner: $owner) {
