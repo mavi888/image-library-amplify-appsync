@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./HomePage.css";
 
 import ImageGallery from "./ImageGallery";
@@ -8,70 +8,60 @@ import { Storage, API, graphqlOperation } from "aws-amplify";
 import { listPictures, searchPictures } from "../graphql/queries";
 import { updatePicture, deletePicture } from "../graphql/mutations";
 
-class HomePage extends React.Component {
-  constructor(props) {
-    super(props);
+function HomePage(props) {
+  const [images, setImages] = useState([]);
 
-    this.state = {
-      images: [],
-    };
-  }
-
-  getAllImagesToState = async () => {
+  const getAllImagesToState = async () => {
     const result = await API.graphql(graphqlOperation(listPictures));
-    let imageArray = await this.buildImageArray(result.data.listPictures.items);
-    this.setState({ images: imageArray });
+    let imageArray = await buildImageArray(result.data.listPictures.items);
+    setImages(imageArray);
   };
 
-  async componentDidMount() {
-    await this.getAllImagesToState();
-  }
+  useEffect(() => {
+    getAllImagesToState();
+  }, []);
 
-  async buildImageArray(listPictures) {
-    return await this.getImagesFileList(listPictures);
-  }
+  const buildImageArray = async (listPictures) => {
+    return await getImagesFileList(listPictures);
+  };
 
-  async getImagesFileList(imageList) {
+  const getImagesFileList = async (imageList) => {
     return Promise.all(
       imageList.map(async (i) => {
-        return this.getOneFormatedImage(i);
+        return getOneFormatedImage(i);
       })
     );
-  }
+  };
 
-  async getOneFormatedImage(image) {
+  const getOneFormatedImage = async (image) => {
     return {
       src: await Storage.get(image.file.key),
       id: image.id,
       labels: image.labels,
     };
-  }
+  };
 
-  deleteImage = async (imageId) => {
+  const deleteImage = async (imageId) => {
     const id = {
       id: imageId,
     };
     try {
       await API.graphql(graphqlOperation(deletePicture, { input: id }));
-      console.log(this.state.images);
-      this.setState({
-        images: this.state.images.filter((value, index, arr) => {
-          return value.id !== imageId;
-        }),
+      console.log(images);
+
+      const i = images.filter((value, index, arr) => {
+        return value.id !== imageId;
       });
+      setImages(i);
     } catch (error) {
       console.log(error);
       alert("Cannot delete: User doesn't own this image");
     }
   };
 
-  addTagImage = async (imageId, tagValue) => {
-    console.log("home page");
-    console.log(imageId);
-    console.log(tagValue);
-
+  const addTagImage = async (imageId, tagValue) => {
     // First i need all the tags for that image
-    const image = this.state.images.filter((value, index, arr) => {
+    const image = images.filter((value, index, arr) => {
       return value.id === imageId;
     });
 
@@ -87,19 +77,19 @@ class HomePage extends React.Component {
       await API.graphql(graphqlOperation(updatePicture, { input: input }));
 
       //Then I need to refresh the state with the new tag
-      await this.getAllImagesToState();
+      await getAllImagesToState();
     } catch (error) {
       console.log(error);
       alert("Cannot edit: User doesn't own this image");
     }
   };
 
-  searchImage = async (searchLabel) => {
+  const searchImage = async (searchLabel) => {
     var result;
 
     // when no search filter is passed, revert back to full list
     if (searchLabel.label == "") {
-      await this.getAllImagesToState();
+      await getAllImagesToState();
     } else {
       // search
       const filter = {
@@ -115,33 +105,29 @@ class HomePage extends React.Component {
       );
 
       if (result.data.searchPictures.items.length > 0) {
-        let imageArray = await this.buildImageArray(
+        let imageArray = await buildImageArray(
           result.data.searchPictures.items
         );
-        this.setState({ images: imageArray });
+        setImages(imageArray);
       } else {
-        this.setState({
-          images: [],
-        });
+        setImages([]);
       }
     }
   };
 
-  render() {
-    return (
-      <div className="HomePage">
-        <div>
-          <h1> Image Gallery</h1>
-        </div>
-        <SearchImage searchImage={this.searchImage} />
-        <ImageGallery
-          images={this.state.images}
-          deleteImage={this.deleteImage}
-          addTagImage={this.addTagImage}
-        />
+  return (
+    <div className="HomePage">
+      <div>
+        <h1> Image Gallery</h1>
       </div>
-    );
-  }
+      <SearchImage searchImage={searchImage} />
+      <ImageGallery
+        images={images}
+        deleteImage={deleteImage}
+        addTagImage={addTagImage}
+      />
+    </div>
+  );
 }
 
 export default HomePage;
