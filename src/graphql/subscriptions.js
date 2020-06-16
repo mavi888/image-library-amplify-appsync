@@ -1,6 +1,21 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const newOnCreatePicture = /* GraphQL */ `
+  subscription NewOnCreatePicture {
+    newOnCreatePicture {
+      id
+      name
+      owner
+      labels
+      file {
+        bucket
+        region
+        key
+      }
+    }
+  }
+`;
 export const onCreatePicture = /* GraphQL */ `
   subscription OnCreatePicture($owner: String!) {
     onCreatePicture(owner: $owner) {
